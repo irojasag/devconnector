@@ -1,18 +1,13 @@
 const express = require("express");
 const router = express.Router();
 const keys = require("../../config/keys");
-
-// Load bcrypt
 const bcrypt = require("bcryptjs");
-
-// Load gravatar
 const gravatar = require("gravatar");
+const jwt = require("jsonwebtoken");
+const passport = require("passport");
 
 // Load User model
 const User = require("../../models/User");
-
-// Load JWT
-const jwt = require("jsonwebtoken");
 
 // @route  GET api/users/test
 // @desc   Test users route
@@ -95,5 +90,21 @@ router.post("/login", (req, res) => {
       console.log(err);
     });
 });
+
+// @route  GET api/users/current
+// @desc   Return current user
+// @access Private
+router.get(
+  "/current",
+  passport.authenticate("jwt", { session: false }), // this protect the endpoint
+  (req, res) => {
+    // user is on req.user because passport authenticate it
+    res.json({
+      id: req.user.id,
+      name: req.user.name,
+      email: req.user.email
+    });
+  }
+);
 
 module.exports = router;
