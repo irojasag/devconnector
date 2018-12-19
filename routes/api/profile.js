@@ -34,4 +34,69 @@ router.get(
   }
 );
 
+// @route  POST api/profile
+// @desc   Create or edit user profile
+// @access Private
+router.post(
+  "/",
+  passport.authenticate("jwt", { session: false }), // this protect the endpoint
+  (req, res) => {
+    // Get fields
+    const profileFields = {}; // Will be send to DB
+    profileFields.user = req.user.id;
+
+    if (req.body.handle) profileFields.handle = req.body.handle;
+    if (req.body.company) profileFields.company = req.body.company;
+    if (req.body.website) profileFields.website = req.body.website;
+    if (req.body.location) profileFields.location = req.body.location;
+    if (req.body.bio) profileFields.bio = req.body.bio;
+    if (req.body.status) profileFields.status = req.body.status;
+    if (req.body.github) profileFields.github = req.body.github;
+    // Skils - split into array
+    if (typeof req.body.skills !== undefined) {
+      profileFields.skills = req.body.skills.split(","); // "PHP,JS,CSS"
+    }
+
+    // Social
+    profileFields.social = {};
+    if (req.body.youtube)
+      profileFields.social.youtube = req.body.social.youtube;
+    if (req.body.facebook)
+      profileFields.social.facebook = req.body.social.facebook;
+    if (req.body.twitter)
+      profileFields.social.twitter = req.body.social.twitter;
+    if (req.body.instagram)
+      profileFields.social.instagram = req.body.social.instagram;
+    if (req.body.linkedin)
+      profileFields.social.linkedin = req.body.social.linkedin;
+
+    Profile.findOne({ user: req.user.id })
+      .then(profile => {
+        if (profile) {
+          // Update
+          Profile.findOneAndUpdate(
+            { user: req.user.id },
+            { $set: profileFields },
+            { new: true }
+          ).then(profile => res.json(profile));
+        } else {
+          // Create
+          // Check if handle exists
+          Profile.findOne({ handle: profileFields.handle }).then(profile => {
+            if (profile) {
+              errors.handle = "Handle already exists";
+              res.status(400).json(errors);
+            }
+
+            // Save profile
+            new Profile(profileFields)
+              .save()
+              .then(profile => res.json(profile));
+          });
+        }
+      })
+      .catch(err => console.log(err));
+  }
+);
+
 module.exports = router;
