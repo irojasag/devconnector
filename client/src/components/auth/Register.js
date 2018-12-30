@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import axios from "axios";
 
 class Register extends Component {
   constructor() {
@@ -29,6 +30,10 @@ class Register extends Component {
     };
 
     console.log(newUser);
+    axios
+      .post("/api/users/register", newUser)
+      .then(res => console.log(res.data))
+      .catch(err => console.log(err.response.data));
   }
 
   render() {
@@ -50,7 +55,6 @@ class Register extends Component {
                     name="name"
                     value={this.state.name}
                     onChange={this.onChange}
-                    required
                   />
                 </div>
                 <div className="form-group">
