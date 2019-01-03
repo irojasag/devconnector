@@ -1,8 +1,8 @@
-import { GET_ERRORS, SET_CURRENT_USER } from "./types";
 import axios from "axios";
 import setAuthToken from "../utils/setAuthToken";
 import jwt_decode from "jwt-decode";
-import { decode } from "punycode";
+
+import { GET_ERRORS, SET_CURRENT_USER } from "./types";
 
 // Register User
 export const registerUser = (userData, history) => dispatch => {
@@ -24,9 +24,9 @@ export const loginUser = userData => dispatch => {
     .then(res => {
       // Save to localStorage
       const { token } = res.data;
-      // Set token to localStorage
-      localStorage.setItem("jwtToken", token); // Local storage only stores string
-      // Set token to Auth Header
+      // Set token to ls
+      localStorage.setItem("jwtToken", token);
+      // Set token to Auth header
       setAuthToken(token);
       // Decode token to get user data
       const decoded = jwt_decode(token);
