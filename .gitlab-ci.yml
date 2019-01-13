@@ -1,0 +1,22 @@
+# Docker Image to use
+image: node:8
+
+stages:
+  - test
+  - e2e
+  - build
+
+before_script:
+  - npm install || true
+
+test:
+  script:
+    - echo "To do"
+
+e2e:
+  script:
+    - echo "To do"
+
+build:
+  script:
+    - echo "To do"
